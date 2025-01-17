@@ -1,0 +1,13 @@
+.env_node1
+.env_node2
+.env_node3
+.env
+.pyc
+.idea
+venv
+__pycache__
+bot.pid
+error.log
+output.log
+logs/*
+google_credentials.json
