@@ -9,5 +9,4 @@ __pycache__
 bot.pid
 error.log
 output.log
-logs/*
 google_credentials.json
