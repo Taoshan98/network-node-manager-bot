@@ -26,6 +26,10 @@ when something happens.
 
 ## Setting Up Nodes
 
+**General Advice for Nodes:**
+To ensure stability, it's highly recommended to set up **static IP addresses** for your nodes via your home router. This
+way, if anything goes wrong, they will always reconnect using the same IP addresses once everything is back to normal.
+
 The bot uses **Google Spreadsheets** to store data online, outside the home network, in case of a power failure. Here's
 how to set it up:
 
@@ -35,11 +39,16 @@ how to set it up:
     - Save the credentials file as **`google_credentials.json`** in the project folder.
 
 2. **Spreadsheet Configuration:**
-   The spreadsheet contains three key columns used by the nodes to adjust their behavior:
+   The spreadsheet contains several key columns used by the nodes to adjust their behavior:
     - **NODE_ID:** Sequential numbers from 1 to N, identifying each node.
+    - **NODE_LAN_IP:** Identifies the node on the network, allowing other nodes to ping it.
+    - **NODE_MAC_ADDRESS:** Stores the MAC address of the network interface for nodes that support Wake-on-LAN.
     - **CHECK:** Determines if the node should be contacted for pings and Wake-on-LAN. This is useful for devices like
       my personal tablet, which I take on trips and disable via a Telegram command.
     - **WOL:** Indicates if the node supports Wake-on-LAN.
+
+   The spreadsheet must be uploaded to **Google Drive**, and sharing permissions should be set to allow **anyone with
+   the link to edit**, ensuring that all nodes can access and update it.
 
    The initial configuration might seem tricky, but I've included Telegram bot commands to simplify adjustments later.
 
@@ -48,22 +57,6 @@ how to set it up:
     - To avoid Google API limits, nodes write at different intervals.
 
 This method works for now, but I plan to move away from Google to something more flexible.
-
-## Telegram Bot Commands
-
-The bot comes with several commands to help manage nodes:
-
-```plaintext
-/reboot - Reboots the node.
-/enable - Enables the contacted node to be verified.
-/disable - Disables the contacted node to prevent it from being verified.
-/enable_nodes - Enables the nodes sent as arguments from another node.
-/disable_nodes - Disables the nodes sent as arguments from another node.
-/check - Checks the operation of the node.
-```
-
-When creating the bot in BotFather, you can copy and paste this list to have all commands readily available in the chat.
-I personally added the nodes to a group to send the same command to all bots and get all responses in a single chat.
 
 ## Installation Guide
 
@@ -102,6 +95,22 @@ I personally added the nodes to a group to send the same command to all bots and
 7. Set up a Telegram bot via **BotFather** and create a Google Spreadsheet using the provided template.
 8. Place the `google_credentials.json` file in the correct directory.
 
+## Telegram Bot Commands
+
+The bot comes with several commands to help manage nodes:
+
+```plaintext
+/reboot - Reboots the node.
+/enable - Enables the contacted node to be verified.
+/disable - Disables the contacted node to prevent it from being verified.
+/enable_nodes - Enables the nodes sent as arguments from another node.
+/disable_nodes - Disables the nodes sent as arguments from another node.
+/check - Checks the operation of the node.
+```
+
+When creating the bot in BotFather, you can copy and paste this list to have all commands readily available in the chat.
+I personally added the nodes to a group to send the same command to all bots and get all responses in a single chat.
+
 #### Windows Task Scheduler Setup
 
 On Windows, use Task Scheduler to automate running the bot:
@@ -123,8 +132,19 @@ run `sshd`, and follow [this guide](https://wiki.termux.com/wiki/Remote_Access).
 2. Install **Termux** from **F-Droid** (don’t use the Play Store version as it's outdated). Download
    from [here](https://f-droid.org).
 3. Get **Termux-API** from F-Droid to access phone features (like battery status).
+4. Open Termux and execute:
+   ```bash
+   pkg update && pkg upgrade
+   pkg install termux-api python
+   ```
+5. Use SSH to access Termux remotely by running:
+   ```bash
+   passwd
+   sshd
+   ```
+   More details can be found [here](https://wiki.termux.com/wiki/Remote_Access).
 
-## Automating Restarts (Linux/macOS)
+## Automating Restarts (Android/Linux/macOS)
 
 To keep the bot running smoothly, set up a cron job:
 
@@ -133,3 +153,10 @@ To keep the bot running smoothly, set up a cron job:
 ```
 
 This runs the script every minute, ensuring everything stays monitored.
+
+## What's Next?
+
+- Better logging and analytics.
+- Support for more messaging platforms.
+- A self-hosted data storage alternative to Google.
+
