@@ -24,14 +24,14 @@ class Handlers:
     async def startup(self, application) -> None:
         await application.bot.send_message(
             chat_id=self.settings.TELEGRAM_MAIN_GROUP,
-            text=f"Il nodo è tornato operativo! 🚀\nProssimo check tra {self.seconds} secondi ⏱️",
+            text=f"I'm back up and running! 🚀\nNext check in {self.seconds} seconds ⏱️",
             parse_mode=ParseMode.HTML
         )
 
         self.interval = SetInterval(self.helpers, self.seconds, self.nodes.handle, application)
 
     async def reboot_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        await self.messages.send_message(context, update, f"Sto per riavviarmi 🌀", True)
+        await self.messages.send_message(context, update, f"I'm going to reboot 🌀", True)
         self.interval.cancel()
         exit()
 
@@ -62,6 +62,6 @@ class Handlers:
         await self.messages.send_message(
             context,
             update,
-            f"Il nodo funziona regolarmente! 🚀\nStato Batteria: \n{battery_status}",
+            f"I am fully up! 🚀\nBattery Status: \n{battery_status}",
             True
         )

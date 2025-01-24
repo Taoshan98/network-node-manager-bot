@@ -5,7 +5,7 @@ class MessagesController:
     def __init__(self, helpers):
         self.helpers = helpers
         self.except_message = (
-            f"\n\nC'è stato un problema, controlla i log."
+            f"\n\nThere was a problem, check the logs."
         )
 
     async def send_message(self, context, update, message, send_to_chat=False):
