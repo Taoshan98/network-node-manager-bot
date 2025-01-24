@@ -46,12 +46,12 @@ class NodesController:
 
     def _get_battery_status_message(self, percentage):
         if percentage < self.previous_battery_percentage:
-            return f"Mi sto scaricando 😵‍💫\nLivello attuale {percentage}% 🪫"
+            return f"Battery is getting low 😵‍💫\nCurrent {percentage}% 🪫"
         elif percentage > self.previous_battery_percentage:
-            return f"Mi sto ricaricando 😊\nLivello attuale {percentage}% ⚡"
+            return f"Battery is getting up 😊\nCurrent {percentage}% ⚡"
         elif percentage == 100 and self.previous_battery_percentage < 100:
-            return f"Mi sono ricaricato completamente 🤩\nLivello attuale {percentage}% 🔋"
-        return f"Livello attuale {percentage}%"
+            return f"Battery Full 🤩\nCurrent {percentage}% 🔋"
+        return f"Current {percentage}%"
 
     async def _process_nodes(self, nodes):
         for node in nodes:
@@ -82,7 +82,7 @@ class NodesController:
     async def _send_node_alert(self, node):
         await self.application.bot.send_message(
             chat_id=self.settings.TELEGRAM_MAIN_GROUP,
-            text=f"Il nodo {node['NODE_ID']} risulta offline! ❌\nProvo a rianimarlo ❤️‍🩹",
+            text=f"the node {node['NODE_ID']} is offline! ❌\nI try to revive him ❤️‍🩹",
             parse_mode=ParseMode.HTML
         )
         send_magic_packet(node['NODE_MAC_ADDRESS'])

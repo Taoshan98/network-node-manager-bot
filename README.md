@@ -74,28 +74,19 @@ This method works for now, but I plan to move away from Google to something more
 4. Set up a virtual environment:
    ```bash
    python3 -m venv .venv
-   source .venv/bin/activate   # Linux/macOS
+   source .venv/bin/activate   # Android/Linux/macOS
    .venv\Scripts\activate      # Windows
    ```
 5. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-6. Configure the **.env** file with the following:
-   ```plaintext
-   TELEGRAM_TOKEN=your-telegram-token
-   TELEGRAM_MAIN_GROUP=chat-id-or-group-id
-   NODE_ID=node-id
-   NODE_HAS_BATTERY=node-battery-for-laptop-or-smartphones integer 1-0
-   SPREADSHEET_URL=google-spreadsheet-url-like https://docs.google.com/spreadsheets/d/1
-   MAIN_SHEET_ID=main-sheet-id-usually-0
-   NODE_SHEET_ID=node-sheet-id
-   NODE_DEBUG=debug-mode integer 1-0
-   ```
-7. Set up a Telegram bot via **BotFather** and create a Google Spreadsheet using the provided template.
-8. Place the `google_credentials.json` file in the correct directory.
+6. Place the `google_credentials.json` file in the correct directory.
 
-## Telegram Bot Commands
+## Telegram Configuration and Bot Commands
+
+1. Set up a Telegram bot via **BotFather**.
+2. Save your new Telegram Token for next steps.
 
 The bot comes with several commands to help manage nodes:
 
@@ -111,17 +102,21 @@ The bot comes with several commands to help manage nodes:
 When creating the bot in BotFather, you can copy and paste this list to have all commands readily available in the chat.
 I personally added the nodes to a group to send the same command to all bots and get all responses in a single chat.
 
-#### Windows Task Scheduler Setup
+## .env File Configuration
 
-On Windows, use Task Scheduler to automate running the bot:
+1. Configure the **.env** file with the following:
+   ```plaintext
+   TELEGRAM_TOKEN=your-telegram-token
+   TELEGRAM_MAIN_GROUP=chat-id-or-group-id
+   NODE_ID=node-id
+   NODE_HAS_BATTERY=node-battery-for-laptop-or-smartphones integer 1-0
+   SPREADSHEET_URL=google-spreadsheet-url-like https://docs.google.com/spreadsheets/d/1
+   MAIN_SHEET_ID=main-sheet-id-usually-0
+   NODE_SHEET_ID=node-sheet-id
+   NODE_DEBUG=debug-mode integer 1-0
+   ```
 
-1. Open **Task Scheduler** and create a new task.
-2. Set it to run at startup or at regular intervals.
-3. Choose "Start a program" and set the path to `python.exe`.
-4. Add arguments to run the bot, e.g., `C:\path\to\network-node-manager-bot\nnm_check.py`.
-5. Save and activate the task.
-
-### Android Setup
+## Android Setup
 
 Follow the same steps but with some extra setup:
 
@@ -135,14 +130,20 @@ run `sshd`, and follow [this guide](https://wiki.termux.com/wiki/Remote_Access).
 4. Open Termux and execute:
    ```bash
    pkg update && pkg upgrade
-   pkg install termux-api python
+   termux-setup-storage
+   pkg install cronie termux-api python clang cmake make libffi-dev openssl-dev libxml2 libxslt ninja autoconf automake build-essential libtool patchelf
    ```
-5. Use SSH to access Termux remotely by running:
-   ```bash
-   passwd
-   sshd
-   ```
-   More details can be found [here](https://wiki.termux.com/wiki/Remote_Access).
+
+**Pro Tip:** On Android I recommend to install pip packages using the -v option, because it can happen that the device
+is not very performant so it looks like it froze.
+
+Just run command like this:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt -v
+```
 
 ## Automating Restarts (Android/Linux/macOS)
 
@@ -151,6 +152,16 @@ To keep the bot running smoothly, set up a cron job:
 ```bash
 * * * * * cd /path/to/network-node-manager-bot && python3 nnm_check.py
 ```
+
+### Windows Task Scheduler Setup
+
+On Windows, use Task Scheduler to automate running the bot:
+
+1. Open **Task Scheduler** and create a new task.
+2. Set it to run at startup or at regular intervals.
+3. Choose "Start a program" and set the path to `python.exe`.
+4. Add arguments to run the bot, e.g., `C:\path\to\network-node-manager-bot\nnm_check.py`.
+5. Save and activate the task.
 
 This runs the script every minute, ensuring everything stays monitored.
 
