@@ -16,6 +16,9 @@ cp output.log logs/output_"$date".log
 echo "Delete Empty Files"
 find logs/ -type f -empty -print -delete
 
+echo "Delete log files older than 7 days"
+find logs/ -type f -mtime +7 -print -delete
+
 sleep 3
 
 echo "Start the script"
