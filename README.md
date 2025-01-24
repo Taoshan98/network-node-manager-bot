@@ -82,6 +82,11 @@ This method works for now, but I plan to move away from Google to something more
    pip install -r requirements.txt
    ```
 6. Place the `google_credentials.json` file in the correct directory.
+7. On Android, macOS, and Linux, run the following command to make the start script executable:
+   ```bash
+   chmod +x start.sh
+   ```
+   **Note:** On macOS and Linux, use `sudo` to run the command.
 
 ## Telegram Configuration and Bot Commands
 
@@ -143,6 +148,8 @@ Just run command like this:
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt -v
+chmod +x start.sh
+./start.sh
 ```
 
 ## Automating Restarts (Android/Linux/macOS)
