@@ -2,9 +2,6 @@
 
 echo "Stop the script"
 pkill -f -n nnm_main.py
-pkill -f -n nnm_main.py
-pkill -f -n nnm_main.py
-pkill -f -n nnm_main.py
 
 sleep 3
 

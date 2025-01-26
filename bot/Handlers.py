@@ -1,3 +1,4 @@
+import sys
 from random import randint
 from telegram import Update
 from telegram.constants import ParseMode
@@ -33,7 +34,7 @@ class Handlers:
     async def reboot_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await self.messages.send_message(context, update, f"I'm going to reboot 🌀", True)
         self.interval.cancel()
-        exit()
+        sys.exit(0)
 
     async def disable_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         row = self.settings.NODE_ID + 1
