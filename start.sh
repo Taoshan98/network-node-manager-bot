@@ -1,9 +1,10 @@
 #!/bin/sh
 
 echo "Stop the script"
-pkill -f -n nnm_main.py
-
-sleep 3
+while pgrep -f "nnm_main.py" > /dev/null; do
+    pkill -f -n nnm_main.py
+    sleep 1
+done
 
 echo "Copy current log files"
 date=$(date +"%Y-%m-%d %T")
