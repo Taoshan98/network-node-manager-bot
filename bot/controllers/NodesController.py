@@ -102,7 +102,8 @@ class NodesController:
         self.spreadsheet.write_node_data(node_data)
 
     def _ping_node(self, host):
-        return 'failed' if os.system(f"ping -c 1 {host} > /dev/null 2>&1") > 0 else 'success'
+        ping = self.helpers.ping(host)
+        return 'failed' if ping.returncode > 0 else 'success'
 
     def _get_current_timestamp(self):
         return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")

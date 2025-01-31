@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "Stop the script"
+echo "Stopping Bot..."
 while pgrep -f "nnm_main.py" > /dev/null; do
     pkill -f -n nnm_main.py
     sleep 1
@@ -17,7 +17,7 @@ find logs/ -type f -empty ! -name ".gitignore" -print -delete
 echo "Delete log files older than 7 days"
 find logs/ -type f -mtime +7 -print -delete
 
-sleep 3
+sleep 2
 
-echo "Start the script"
+echo "Starting Bot..."
 nohup .venv/bin/python nnm_main.py> output.log  2> error.log & echo $! > bot.pid

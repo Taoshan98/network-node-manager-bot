@@ -1,6 +1,7 @@
 import json
 import subprocess
 import psutil
+import time
 
 
 class Helpers:
@@ -34,3 +35,22 @@ class Helpers:
             )
 
             return battery_status, {'percentage': battery.percent, 'plugged': battery.power_plugged}
+
+    def ping(self, host):
+        count_param = '-c'
+        if self.settings.NODE_TYPE == 'WINDOWS':
+            count_param = '-n 1'
+
+        return subprocess.run(
+            ["ping", count_param, "1", host],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+
+    def wait_for_internet(self, timeout=30):
+        ping = self.ping("8.8.8.8")
+
+        while ping.returncode > 0:
+            self.write_log('error', "Internet connection not available!")
+            time.sleep(timeout)
+            ping = self.ping("8.8.8.8")
