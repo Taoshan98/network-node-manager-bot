@@ -30,8 +30,40 @@ when something happens.
 To ensure stability, it's highly recommended to set up **static IP addresses** for your nodes via your home router. This
 way, if anything goes wrong, they will always reconnect using the same IP addresses once everything is back to normal.
 
-The bot uses **Google Spreadsheets** to store data online, outside the home network, in case of a power failure. Here's
-how to set it up:
+The bot supports two storage options (which can also be combined):
+1. **Serverless Backend (Recommended):** A fast, lightweight REST API deployed on serverless services like **Vercel** (or run locally). Nodes communicate directly over HTTP with no need for Google credentials on edge devices.
+2. **Google Spreadsheets (Legacy / Combined):** Storing data in Google Sheets online outside the home network.
+
+---
+
+### Option A: Serverless Backend on Vercel (Recommended)
+
+The repository includes a ready-to-deploy backend in `api/index.py` and `backend/`, configured for Vercel.
+
+#### Deploying to Vercel
+1. Install the [Vercel CLI](https://vercel.com/cli) or import this repository in your [Vercel Dashboard](https://vercel.com/dashboard).
+2. If using the CLI, run:
+   ```bash
+   vercel
+   ```
+3. (Optional) Set environment variables in your Vercel project settings:
+   - `BACKEND_API_KEY`: Secret key to authenticate node requests.
+   - `INITIAL_NODES`: JSON array defining initial nodes configuration.
+4. Note your deployment URL (e.g., `https://your-project.vercel.app`).
+5. Open `https://your-project.vercel.app/docs` to explore interactive Swagger API documentation.
+
+#### Running Backend Locally
+You can also run the backend locally or on your own server:
+```bash
+python -m backend.main
+```
+The server will start on `http://0.0.0.0:8000`.
+
+---
+
+### Option B: Google Spreadsheet Setup (Legacy / Combined)
+
+Here's how to set up Google Spreadsheets if you want to use it as standalone storage or combined with the serverless backend:
 
 1. **Google Cloud Setup:**
     - Create a project in Google Cloud Platform.
@@ -56,7 +88,6 @@ how to set it up:
     - Each node logs its status in the spreadsheet.
     - To avoid Google API limits, nodes write at different intervals.
 
-This method works for now, but I plan to move away from Google to something more flexible.
 
 ## Installation Guide
 
@@ -109,16 +140,29 @@ I personally added the nodes to a group to send the same command to all bots and
 
 ## .env File Configuration
 
-1. Configure the **.env** file with the following:
+1. Configure the **.env** file (see `.env.example`):
    ```plaintext
+   # Telegram
    TELEGRAM_TOKEN=your-telegram-token
    TELEGRAM_MAIN_GROUP=chat-id-or-group-id
+
+   # Node Settings
    NODE_ID=node-id
    NODE_HAS_BATTERY=node-battery-for-laptop-or-smartphones integer 1-0
+   NODE_TYPE=LINUX
+   NODE_DEBUG=debug-mode integer 1-0
+
+   # Storage Mode: BACKEND, SPREADSHEET, or COMBINED
+   DATA_BACKEND=BACKEND
+
+   # Serverless Backend Settings (Vercel)
+   BACKEND_URL=https://your-project.vercel.app
+   BACKEND_API_KEY=optional-api-key
+
+   # Google Spreadsheet Settings (Optional, needed only for SPREADSHEET or COMBINED mode)
    SPREADSHEET_URL=google-spreadsheet-url-like https://docs.google.com/spreadsheets/d/1
    MAIN_SHEET_ID=main-sheet-id-usually-0
    NODE_SHEET_ID=node-sheet-id
-   NODE_DEBUG=debug-mode integer 1-0
    ```
 
 ## Android Setup
