@@ -3,7 +3,7 @@ from random import randint
 from telegram import Update
 from telegram.constants import ParseMode
 from telegram.ext import ContextTypes
-from bot.controllers.SpreadSheetController import SpreadSheetController
+from bot.controllers.StorageController import get_storage_controller
 from bot.controllers.MessagesController import MessagesController
 from bot.controllers.NodesController import NodesController
 from bot.modules.SetInterval import SetInterval
@@ -14,8 +14,9 @@ class Handlers:
         self.interval = None
         self.helpers = helpers
         self.settings = settings
-        self.spreadsheet = SpreadSheetController(settings)
-        self.nodes = NodesController(settings, self.spreadsheet, helpers)
+        self.storage = get_storage_controller(settings, helpers)
+        self.spreadsheet = self.storage  # Backwards compatibility
+        self.nodes = NodesController(settings, self.storage, helpers)
         self.messages = MessagesController(helpers)
 
         self.seconds = 5
@@ -37,26 +38,38 @@ class Handlers:
         sys.exit(0)
 
     async def disable_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        row = self.settings.NODE_ID + 1
-        self.spreadsheet.update_main_data(row, 11, 'FALSE')
-
-    async def enable_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        row = self.settings.NODE_ID + 1
-        self.spreadsheet.update_main_data(row, 11, 'TRUE')
-
-    async def disable_nodes_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        nodes = context.args
-
-        for node in nodes:
-            row = int(node) + 1
+        if hasattr(self.storage, 'update_node_check'):
+            self.storage.update_node_check(self.settings.NODE_ID, 'FALSE')
+        else:
+            row = self.settings.NODE_ID + 1
             self.spreadsheet.update_main_data(row, 11, 'FALSE')
 
-    async def enable_nodes_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        nodes = context.args
+    async def enable_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        if hasattr(self.storage, 'update_node_check'):
+            self.storage.update_node_check(self.settings.NODE_ID, 'TRUE')
+        else:
+            row = self.settings.NODE_ID + 1
+            self.spreadsheet.update_main_data(row, 11, 'TRUE')
+
+    async def disable_nodes_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        nodes = context.args or []
 
         for node in nodes:
-            row = int(node) + 1
-            self.spreadsheet.update_main_data(row, 11, 'TRUE')
+            if hasattr(self.storage, 'update_node_check'):
+                self.storage.update_node_check(int(node), 'FALSE')
+            else:
+                row = int(node) + 1
+                self.spreadsheet.update_main_data(row, 11, 'FALSE')
+
+    async def enable_nodes_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        nodes = context.args or []
+
+        for node in nodes:
+            if hasattr(self.storage, 'update_node_check'):
+                self.storage.update_node_check(int(node), 'TRUE')
+            else:
+                row = int(node) + 1
+                self.spreadsheet.update_main_data(row, 11, 'TRUE')
 
     async def check_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         battery_status, battery = self.helpers.get_battery_status()
